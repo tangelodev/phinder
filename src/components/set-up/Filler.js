@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 import './Filler.css'
 import history from '../../history'
 
-import {getSubmissionsAmount} from '../../actions/filldb'
 
 class Filler extends React.Component{
     /*
@@ -34,11 +33,4 @@ class Filler extends React.Component{
     }
 }
 
-const mapStateToProps = (state) => {
-    return{
-        progressCount: state.db.progressCount,
-        totalSubmissions: state.db.totalSubmissions
-    }
-}
-
-export default connect(mapStateToProps, {getSubmissionsAmount})(Filler)
+export default connect()(Filler)

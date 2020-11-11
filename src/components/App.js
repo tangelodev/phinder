@@ -26,7 +26,6 @@ class App extends React.Component{
 
 const mapStateToProps = (state) => {
     return{
-        databaseFulled: state.db.databaseFulled
     }
 }
 

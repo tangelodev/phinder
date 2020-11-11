@@ -8,8 +8,6 @@ import {ReactComponent as Logo} from './big-logo.svg'
 import {ReactComponent as EnterIcon} from './enter-icon-transparent.svg'
 import ProgressBar from './ProgressBar'
 
-import {loadAll, setDatabase, getSubmissionsAmount} from '../../actions/filldb'
-
 class SetUp extends React.Component{
     constructor(){
         super()
@@ -20,15 +18,7 @@ class SetUp extends React.Component{
     }
 
     componentDidMount(){
-        this.props.setDatabase()
-    }
-
-    loadAll = () => {
-        console.log(this.props.databaseSetted);
-        
-        if (this.props.databaseSetted === true) {
-            this.props.loadAll()
-        }        
+        //this.props.setDatabase()
     }
 
     onSubmit = ({usernameInput: author}) => {
@@ -80,11 +70,5 @@ class SetUp extends React.Component{
     }
 }
 
-const mapStateToProps = (state) => {
-    return {
-        comments: Object.values(state.db.comments),
-        databaseSetted: state.db.databaseSetted
-    }
-}
 
-export default connect(mapStateToProps, {loadAll, setDatabase, getSubmissionsAmount})(SetUp)
+export default connect()(SetUp)
