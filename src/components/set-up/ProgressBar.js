@@ -11,7 +11,7 @@ import db from '../../api/nedb/db'
 import config from '../../api/nedb/config'
 import posts from '../../api/nedb/posts'
 
-import {delay, extractHTMLBodies, arrangeComments, hash, destructurizeRedditResponse, arrJoin, getFormattingPoints} from '../../utils'
+import {delay, destructurizeRedditResponse, arrJoin, getFormattingPoints} from '../../utils'
 import history from '../../history'
 
 
@@ -46,75 +46,53 @@ class ProgressBar extends React.Component{
         Manages loop and order of execution
     */
     executeLoop = async (author) => {
-        let start = null
-        let bodiesHTML = null
-        let commentsReady = null
+
         let paginationHelper = null
         let finished = false
 
-        let pushshiftTimer = null
-        let redditTimer = null
-
         while (!finished) {
             // Starts timer for later use
-            start = now()
+            const start = now()
+
+            console.log("paginationHelper", paginationHelper);
 
             // Fetches comments' data from Pushshift
-            const rawCommentsData = await fetchRawCommentData(paginationHelper, author)
-            pushshiftTimer = now() - start
+            const {data: {data: rawCommentsData}} = await fetchRawCommentData(paginationHelper, author)
+            const pushshiftTimer = now() - start
             console.log("Pushshift fetching duration: ", pushshiftTimer);
 
             console.log("rawCommentsData",rawCommentsData);
 
             // Grabs the date from the last comment in the array
-            paginationHelper = rawCommentsData.data.data[rawCommentsData.data.data.length - 1].created_utc
+            paginationHelper = rawCommentsData[rawCommentsData.length - 1].created_utc
 
             // Fetches the comments' bodies in HTML from Reddit's API
-            const redditData = await Promise.all(this.fetchHTMLBodies(rawCommentsData.data.data))
-
+            const redditData = await Promise.all(this.fetchHTMLBodies(rawCommentsData))
+            const redditTimer = now () - pushshiftTimer - start
+            console.log("Reddit fetching duration: ", redditTimer);
 
             console.log("destructurizeRedditResponse", destructurizeRedditResponse(redditData));
             console.log("redditData",redditData);
 
-            const x = rawCommentsData.data.data
+            const x = rawCommentsData
             const y = destructurizeRedditResponse(redditData)
 
-            console.log(arrJoin(x, y, "id", "body_html", (x, y) => {
+            const commentsReady = arrJoin(x, y, "id", (x, y) => {
                 return {
                     body: x.body,
                     created: x.created_utc,
                     subreddit: x.subreddit,
                     author: x.author,
-                    // https://www.reddit.com/${postId} => returns posts URL
-                    postId: x.link_id.split('t3_')[1],   
-                    // https://www.reddit.com/r/askphilosophy/comments/ghysp9/evidence_for_free_will/${parentId} => returns parents comment URL or postId if it's first comment in chain
-                    parentId: x.parent_id, 
-
-                    // returns own comment URL
-                    linkId: x.id,          
-                    //outboundLinks: getOutboundLinks(comment.body),
-                    //pageRank: 1,
+                    postId: x.link_id.split('t3_')[1],    // https://www.reddit.com/${postId} => returns posts URL       
+                    parentId: x.parent_id,    // www.reddit.com/r/.../comments/ghysp9/.../${parentId} => returns parents comment URL or postId if it's first comment in chain
+                    linkId: x.id,    // returns own comment URL
                     bodyHTML: y.body_html,
                     formattingPoints: getFormattingPoints(y.body_html),
                     lengthPoints: y.body_html.length      
                 }
-            }));
-
-            // Creates new array with only HTMLbodies and Ids
-            bodiesHTML = extractHTMLBodies(redditData, rawCommentsData.data.data)
-            redditTimer = now () - pushshiftTimer - start
-            console.log("Reddit fetching duration: ", redditTimer);
-
-            // Filters the necessary variables
-            commentsReady = arrangeComments(rawCommentsData.data.data, bodiesHTML)
-            console.log("commentsReady: ", commentsReady);
-            var date = new Date(commentsReady[0].created * 1000);
-            console.log("timestamp: ", commentsReady[0].created);
-            console.log(`date:  ${date.getDate()} / ${date.getMonth() + 1} / ${date.getFullYear()} `);
-
-            commentsReady.forEach((comment,i) => {
-                console.log("comment postID:   " + comment.postId + "    comment i: " + i);
             })
+
+            console.log("commentsReady: ", commentsReady);
 
             // Inserts into db
             await db.insert(commentsReady)     
@@ -128,7 +106,7 @@ class ProgressBar extends React.Component{
             }
 
             // Checks if its the last cycle by watching the comment's array length
-            if (rawCommentsData.data.data.length < 25) {
+            if (rawCommentsData.length < 25) {
                 finished = true
             }
             

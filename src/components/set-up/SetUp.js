@@ -31,11 +31,6 @@ class SetUp extends React.Component{
         }        
     }
 
-    buttonPress = () => {
-        this.setState({inputVisible:  false})
-        this.loadAll()
-    }
-
     onSubmit = ({usernameInput: author}) => {
         //this.props.getSubmissionsAmount(author)
         this.setState({author})

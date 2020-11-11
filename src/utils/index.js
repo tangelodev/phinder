@@ -208,10 +208,10 @@ export const  join = (mainTable, lookupTable, selectValue) => {
     return mainTable
 };
 
-export const  arrJoin = (mainTable, lookupTable, lookupKey, selectValue, select) => {
+export const  arrJoin = (mainTable, lookupTable, lookupKey, select) => {
+    // eslint-disable-next-line array-callback-return
     return mainTable.map((e, i) => {
         if (e[lookupKey] === lookupTable[i][lookupKey]) 
-            //return {...e, [selectValue]: lookupTable[i][selectValue]}
             return select(e, lookupTable[i])
     })
 };
