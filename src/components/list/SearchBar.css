@@ -1,0 +1,149 @@
+@font-face {
+    font-family: 'open_sansregular';
+    src: url('../../resources/opensans-regular-webfont.woff2') format('woff2'),
+         url('../../resources/opensans-regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+.ui {
+    font-family: 'open_sansregular';
+}
+
+.search-bar {
+    border: 1px solid #979B97;
+    border-radius: 1px;
+    display: block;
+    margin: auto;
+    min-width: 500px;
+    width: 40%;
+    height: 30px;
+    position: relative;
+    background-color: #f0efeb;
+    box-shadow: inset 0 1px 3px -2px #333533;
+}
+
+
+.arrow-icon-wrapper{
+    float: left;
+    padding-right: 10px;
+    padding-left: 10px;
+    height: 100%;
+    user-select: none;
+}
+
+.arrow-icon {
+    width: 6px;
+    transition: transform 0.2s ease ;
+}
+
+.arrow-icon.down {
+    transform: rotate(90deg);
+}
+
+.arrow-icon path {
+    fill: #333533;
+    stroke-width: 10px;
+}
+
+.search-input-text-wrapper {
+    float: left;
+    padding-top: 4px;
+    width: 85%;
+}
+
+.search-input-text {
+    font-size: 16px;
+    background-color: inherit;
+    color: none;
+    padding: none;
+    border: none;
+    outline-width: 0;
+    width: 100%;
+}
+
+.magnifying-glass-icon {
+    position: absolute;
+    right: 0px;
+
+    user-select: none;
+    height: inherit;
+    width: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+    background-color: #DBD9D1;
+    border-left: 1px solid #979B97;
+}
+
+.magnifying-glass-icon path{
+    fill: #333533;
+}
+
+.expanded-search {
+    border-bottom: 1px solid #979B97;
+    border-right: 1px solid #979B97;
+    border-left: 1px solid #979B97;
+    
+    position: absolute;
+    left:0;
+    right:0;
+    z-index: 5;
+    
+    margin:0 auto;
+    min-width: 380px;
+    width: 30%;
+    background-color: #af9fa5;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06),0 2px 6px rgba(0,0,0,0.06),0 3px 8px rgba(0,0,0,0.09),inset 0 9px 9px -12px rgba(0,0,0,0.75);
+
+    user-select: none;
+    color: #333533;
+    font-size: 14px;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.not-expanded {
+    visibility: hidden;
+    height: 0px;
+    transition: visibility 0s 0.2s,height 0.2s ease ;
+}
+
+.expanded {
+    visibility: visible;
+    height: 130px;
+    transition: height 0.2s ease ;
+}
+
+.grid-cell {
+    margin-left: 10px;
+    margin-top: 10px;
+    flex-basis: 50%;
+}
+
+.grid-element {
+    margin-bottom: 5px;
+}
+
+.input-label {
+    margin-right: 5px;
+}
+
+.text-input {
+    width: 40%;
+}
+
+.date-input {
+    width: 60%;
+}
+
+.number-input {
+    width: 50px;
+}
+
+.input-slider {
+    width: 40%;
+}
+

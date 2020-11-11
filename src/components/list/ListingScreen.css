@@ -1,0 +1,12 @@
+.background{
+    background-color: #333533;
+}
+
+.background-breaker{
+    position: relative;
+    margin: auto;
+    width: 80%;
+    min-height: 100vh;
+    padding-top: 20px;
+    background-color: #f0efeb;
+}

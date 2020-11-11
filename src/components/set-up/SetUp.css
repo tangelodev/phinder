@@ -1,0 +1,82 @@
+.logo {
+    position: relative;
+    display: block;
+    margin: auto;
+    margin-top: 5%;
+}
+
+.button {
+    background: none;
+    cursor: pointer;
+    display: block;
+    margin: auto;
+    margin-top: 3%;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: bold;
+    color: #558B6E;
+    border: #558B6E solid 2px;
+    text-align: center;
+    width: 7em;
+    border-radius: 3px;
+}
+
+.input-name {
+    display:block;
+    margin: auto;
+    width: fit-content;
+    margin-top: 40px;
+}
+
+.login-input {
+    background-color: inherit;
+    color: none;
+    padding: none;
+    border: none;
+    border-bottom: solid 2px black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    padding-left: 5px;
+    outline-width: 0;
+    float: left;
+}
+
+.enter-icon {
+    cursor: pointer;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+    margin-top: 1px;
+    float: right;
+}
+
+.visible {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.1s linear;
+}      
+
+.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.1s, opacity 0.1s linear;
+}           
+
+.message {
+    position: relative;
+    display: block;
+    margin: auto;
+    font-family: Arial, Helvetica, sans-serif;
+    width: fit-content;
+    font-size: 20px;
+}
+
+.loading-bar {
+    position: relative;
+    height: 5px;
+    width: 50%;
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+}
+
