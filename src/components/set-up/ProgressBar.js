@@ -91,7 +91,8 @@ class ProgressBar extends React.Component{
                     postId: x.link_id.split('t3_')[1],    // https://www.reddit.com/${postId} => returns posts URL       
                     parentId: x.parent_id,    // www.reddit.com/r/.../comments/ghysp9/.../${parentId} => returns parents comment URL or postId if it's first comment in chain
                     linkId: x.id,    // returns own comment URL
-                    bodyHTML: y.body_html,
+                    isThereBodyHTML: y.body_html ? true : false,
+                    bodyHTML: y.body_html ? y.body_html : x.body,
                     formattingPoints: getFormattingPoints(y.body_html),
                     lengthPoints: y.body_html.length      
                 }
