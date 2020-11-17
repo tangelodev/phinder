@@ -25,7 +25,11 @@ export const fetchRawCommentData = async (paginationHelper, author) => {
 }
 
 export const getSubmissionsAmount = async (author) => {        
-    const {data: {aggs: {author: [ {doc_count: submissionCount }]}}} = await pushshift.get(`submission/search/?author=${author}&aggs=author&limit=0`)
-    const {data: {aggs: {author: [ {doc_count: commentCount }]}}} = await pushshift.get(`comment/search/?author=${author}&aggs=author&limit=0`)
-    return submissionCount + commentCount   
+    //const {data: {aggs: {author: [ {doc_count: submissionCount }]}}} = await pushshift.get(`submission/search/?author=${author}&aggs=author&limit=0`)
+    //const {data: {aggs: {author: [ {doc_count: commentCount }]}}} = await pushshift.get(`comment/search/?author=${author}&aggs=author&limit=0`)
+    const x = await pushshift.get(`submission/search/?author=${author}&aggs=author&limit=0`)
+    const y = await pushshift.get(`comment/search/?author=${author}&aggs=author&limit=0`)
+    console.log("x", x);
+    console.log("y", y);
+    //return submissionCount + commentCount   
 }

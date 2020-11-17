@@ -93,14 +93,16 @@ export const getFormattingPoints = (HTMLbody) => {
 
 export const destructurizeRedditResponse = (arr) => {
     return arr.map(e => {
-        return e.data.data.children[0].data
+        if (e.data.data.children[0].data)
+            return e.data.data.children[0].data
+        else return null
     })
 };
 
 export const  arrJoin = (mainTable, lookupTable, lookupKey, select) => {
-    // eslint-disable-next-line array-callback-return
     return mainTable.map((e, i) => {
         if (e[lookupKey] === lookupTable[i][lookupKey]) 
             return select(e, lookupTable[i])
+        else return null
     })
 };

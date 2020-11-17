@@ -4,7 +4,7 @@ import now from 'performance-now'
 import './ProgressBar.css'
 import Filler from './Filler'
 
-import {fetchRawCommentData} from '../../api/pushshift/index'
+import {fetchRawCommentData, getSubmissionsAmount} from '../../api/pushshift/index'
 import reddit from '../../api/redditAPI'
 
 import db from '../../api/nedb/db'
@@ -16,6 +16,13 @@ import history from '../../history'
 
 
 class ProgressBar extends React.Component{
+    constructor(){
+        super()
+        this.state = {
+            submissionsAmount: null,
+            submissionsLoaded: 0
+        }
+    }
 
     /*
     Param: 
@@ -34,8 +41,6 @@ class ProgressBar extends React.Component{
 
         return requestsCommentsDataReddit
     }
-
-
 
 
     /*
@@ -96,6 +101,9 @@ class ProgressBar extends React.Component{
 
             // Inserts into db
             await db.insert(commentsReady)     
+
+            // Updates for loader
+            this.setState({submissionsLoaded: this.state.submissionsLoaded + commentsReady.length})
             
             // Waits until 1 second passes from the previous request
             console.log("Total cycle Time: ", now() - start);
@@ -127,6 +135,9 @@ class ProgressBar extends React.Component{
         // TO DO: Be more specific, put it in settings or something 
         config.update({databasefull: false})
 
+        // Makes linkId unique
+        await db.ensureIndex({fieldName: 'linkId', unique: true})
+
         // Cleans database of any trash data
         console.log('Before Wipe: ' , await db.find());
         await this.wipeDatabase()
@@ -135,13 +146,13 @@ class ProgressBar extends React.Component{
         await this.executeLoop(author)
 
         // Registers in the database that the Great Insert has been completed
-        //await dispatch(fillDatabase())
+        await config.update({databasefull: true})
 
         // Returns to main page after the process is finished
         history.push('/')
     } 
 
-    
+
     wipeDatabase = async () => {
         await db.remove({body: {$exists: true}}, { multi: true }).catch((e) => {
             console.log(e)        
@@ -152,9 +163,24 @@ class ProgressBar extends React.Component{
         })
     }
 
+    calculatePercentage(){
+        if (!this.state.submissionsAmount) {
+            return 0
+        }
+        const percentage = ( this.state.submissionsLoaded / this.state.submissionsAmount ) * 100
+        
+        if (percentage === 100) {
+            history.push('/')
+        } else {
+            return percentage
+        }
+
+    }
+
     componentDidMount(){
-        console.log("IM RENDERED");
+        console.log("IM RENDERED", this.props.author);
         this.loadAll(this.props.author)
+        this.setState({submissionsAmount: getSubmissionsAmount(this.props.author)})
     }
 
     render(){
@@ -163,7 +189,7 @@ class ProgressBar extends React.Component{
             <p className="message">Please wait while the database loads</p>
             <div className="loading-bar">
             <div className="progress-bar">
-                <Filler />
+                <Filler percentage={this.calculatePercentage()} />
             </div>
             </div>                    
             </div>
