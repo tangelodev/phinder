@@ -90,10 +90,10 @@ class List extends React.Component {
                     commentWrapper.style.maxHeight = `${commentWrapper.scrollHeight}px`
                     commentWrapper.style.borderBottom = "0"
                 }else if(commentWrapper !== null){
-                    if (commentWrapper.scrollHeight < 200) {
+                    if (commentWrapper.scrollHeight < 300) {
                         commentWrapper.style.maxHeight = `${commentWrapper.scrollHeight}px`
                     } else {
-                        commentWrapper.style.maxHeight = "200px"
+                        commentWrapper.style.maxHeight = "300px"
                         commentWrapper.style.borderBottom = "1px dashed #333533"
                     }               
                     
@@ -111,6 +111,9 @@ class List extends React.Component {
             return (
                 <div className="item" key={comment._id}>
                     <div className="content">
+                        <div className="post-title">
+                            {comment.postTitle}
+                        </div>
                         <div 
                             className="comment-wrapper"
                             onClick={() => this.toggleBodyOpen(i)}
