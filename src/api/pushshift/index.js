@@ -31,7 +31,7 @@ export const fetchIds = async (paginationHelper, author) => {
                 paginationHelper !== null 
                     ? paginationHelper
                     : ''
-            }&author=${author}&size=500&filter=id`
+            }&author=${author}&size=100&filter=id`
     ).catch((err) => {
         if (err.response) {
             // client received an error response (5xx, 4xx)
