@@ -4,14 +4,14 @@ import now from 'performance-now'
 import './ProgressBar.css'
 import Filler from './Filler'
 
-import {fetchIds, fetchRawCommentData, getSubmissionsAmount} from '../../api/pushshift/index'
+import {fetchIds} from '../../api/pushshift/index'
 import reddit from '../../api/redditAPI'
 
 import db from '../../api/nedb/db'
 import config from '../../api/nedb/config'
 import posts from '../../api/nedb/posts'
 
-import {delay, destructurizeRedditResponse, arrJoin, getFormattingPoints} from '../../utils'
+import {delay, getFormattingPoints} from '../../utils'
 import history from '../../history'
 
 
@@ -47,7 +47,7 @@ class ProgressBar extends React.Component{
     */
     executeLoop = async (author) => {
 
-        let paginationHelper = null
+        let paginationHelper = 1346335575
         let finished = false
         let commentsLoaded = 0
 
@@ -63,6 +63,8 @@ class ProgressBar extends React.Component{
             const pushshiftTimer = now() - start
             console.log("Pushshift fetching duration: ", pushshiftTimer);
 
+            if (rawCommentsData.length === 0) break 
+                
             let url = ""
             rawCommentsData.forEach(e => {
                 url = url + "t1_" + e.id + ","
