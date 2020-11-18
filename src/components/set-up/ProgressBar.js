@@ -4,7 +4,7 @@ import now from 'performance-now'
 import './ProgressBar.css'
 import Filler from './Filler'
 
-import {fetchRawCommentData, getSubmissionsAmount} from '../../api/pushshift/index'
+import {fetchIds, fetchRawCommentData, getSubmissionsAmount} from '../../api/pushshift/index'
 import reddit from '../../api/redditAPI'
 
 import db from '../../api/nedb/db'
@@ -32,14 +32,9 @@ class ProgressBar extends React.Component{
     Note: 
         commentData contains body and addicional data like IDs, upvotes, etc
     */
-    fetchHTMLBodies = (commentsDataPushshift) => {
+    fetchHTMLBodies = (ids) => {
         // Starts getting the data from Reddit's API
-        const requestsCommentsDataReddit = commentsDataPushshift.map((comment, i) => {
-            const requestCommentDataReddit = reddit.get(`info.json?raw_json=1&id=${"t1_" + comment.id}`)
-            return requestCommentDataReddit
-        })
-
-        return requestsCommentsDataReddit
+        return reddit.get(`info.json?raw_json=1&id=${ids}`)
     }
 
 
@@ -54,6 +49,7 @@ class ProgressBar extends React.Component{
 
         let paginationHelper = null
         let finished = false
+        let commentsLoaded = 0
 
         while (!finished) {
             // Starts timer for later use
@@ -62,41 +58,43 @@ class ProgressBar extends React.Component{
             console.log("paginationHelper", paginationHelper);
 
             // Fetches comments' data from Pushshift
-            const {data: {data: rawCommentsData}} = await fetchRawCommentData(paginationHelper, author)
+            //const {data: {data: rawCommentsData}} = await fetchRawCommentData(paginationHelper, author)
+            const {data: {data: rawCommentsData}} = await fetchIds(paginationHelper, author)
             const pushshiftTimer = now() - start
             console.log("Pushshift fetching duration: ", pushshiftTimer);
 
+            let url = ""
+            rawCommentsData.forEach(e => {
+                url = url + "t1_" + e.id + ","
+            });
+
             console.log("rawCommentsData",rawCommentsData);
 
-            // Grabs the date from the last comment in the array
-            paginationHelper = rawCommentsData[rawCommentsData.length - 1].created_utc
-
             // Fetches the comments' bodies in HTML from Reddit's API
-            const redditData = await Promise.all(this.fetchHTMLBodies(rawCommentsData))
+            const {data: {data: {children: redditData}}} = await this.fetchHTMLBodies(url)
             const redditTimer = now () - pushshiftTimer - start
             console.log("Reddit fetching duration: ", redditTimer);
 
-            console.log("destructurizeRedditResponse", destructurizeRedditResponse(redditData));
+            //console.log("destructurizeRedditResponse", destructurizeRedditResponse(redditData));
             console.log("redditData",redditData);
 
-            const x = rawCommentsData
-            const y = destructurizeRedditResponse(redditData)
+            // Grabs the date from the last comment in the array
+            paginationHelper = redditData[redditData.length - 1].data.created_utc
 
-            const commentsReady = arrJoin(x, y, "id", (x, y) => {
+            const commentsReady = redditData.map(({data: e}) => {
                 return {
-                    body: x.body,
-                    created: x.created_utc,
-                    subreddit: x.subreddit,
-                    author: x.author,
-                    postId: x.link_id.split('t3_')[1],    // https://www.reddit.com/${postId} => returns posts URL       
-                    parentId: x.parent_id,    // www.reddit.com/r/.../comments/ghysp9/.../${parentId} => returns parents comment URL or postId if it's first comment in chain
-                    linkId: x.id,    // returns own comment URL
-                    isThereBodyHTML: y.body_html ? true : false,
-                    bodyHTML: y.body_html ? y.body_html : x.body,
-                    formattingPoints: getFormattingPoints(y.body_html),
-                    lengthPoints: y.body_html.length      
+                    body: e.body,
+                    created: e.created_utc,
+                    subreddit: e.subreddit,
+                    author: e.author,
+                    postId: e.link_id.split('t3_')[1],    // https://www.reddit.com/${postId} => returns posts URL       
+                    parentId: e.parent_id,    // www.reddit.com/r/.../comments/ghysp9/.../${parentId} => returns parents comment URL or postId if it's first comment in chain
+                    linkId: e.id,    // returns own comment URL
+                    bodyHTML: e.body_html,
+                    formattingPoints: getFormattingPoints(e.body_html),
+                    lengthPoints: e.body_html.length      
                 }
-            })
+            })            
 
             console.log("commentsReady: ", commentsReady);
 
@@ -114,10 +112,9 @@ class ProgressBar extends React.Component{
                 await delay(delayTime)
             }
 
-            // Checks if its the last cycle by watching the comment's array length
-            if (rawCommentsData.length < 25) {
-                finished = true
-            }
+
+            commentsLoaded += redditData.length
+            console.log("commentsLoaded", commentsLoaded);
             
             console.log("-----------------------------")
         }
@@ -181,7 +178,7 @@ class ProgressBar extends React.Component{
     componentDidMount(){
         console.log("IM RENDERED", this.props.author);
         this.loadAll(this.props.author)
-        this.setState({submissionsAmount: getSubmissionsAmount(this.props.author)})
+        //this.setState({submissionsAmount: getSubmissionsAmount(this.props.author)})
     }
 
     render(){

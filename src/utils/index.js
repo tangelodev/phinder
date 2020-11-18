@@ -93,9 +93,17 @@ export const getFormattingPoints = (HTMLbody) => {
 
 export const destructurizeRedditResponse = (arr) => {
     return arr.map(e => {
-        if (e.data.data.children[0].data)
+        try {
             return e.data.data.children[0].data
-        else return null
+        }
+        catch (err) {
+            console.log("err", err);
+            console.log("e", e);
+            return {
+                id: null,
+                body_html: null
+            }
+        }
     })
 };
 
@@ -103,6 +111,6 @@ export const  arrJoin = (mainTable, lookupTable, lookupKey, select) => {
     return mainTable.map((e, i) => {
         if (e[lookupKey] === lookupTable[i][lookupKey]) 
             return select(e, lookupTable[i])
-        else return null
+        else return select(e, null)
     })
 };
