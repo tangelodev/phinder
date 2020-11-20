@@ -1,9 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import parse from 'html-react-parser'
 import './List.css'
 
 import DropdownMenu from '../common/DropdownMenu'
+
+import Comment from './Comment'
 
 import { fetchComments, changeScrollActive, addCommentsToList, cleanCommentsList, setSortingBy, setFindingByString} from '../../actions/listdb'
 
@@ -35,16 +36,14 @@ class List extends React.Component {
 
         //this.props.setSortingBy("relevance")
         
-        this.props.addCommentsToList(this.props.findingByString, this.props.sortingBy, null)
+        //this.props.addCommentsToList(this.props.findingByString, this.props.sortingBy, null)
 
-        this.observer.observe(this.lastComment.current)
-
-        this.toggleBodyOpen(null)
+        this.observer.observe(this.lastComment.current)        
     }
 
     componentDidUpdate() {        
         console.log("LIST UPDATED");
-        
+       
         if (this.findingByStringBefore !== this.props.findingByString) {
             this.findingByStringBefore = this.props.findingByString
             this.props.changeScrollActive(false)
@@ -60,46 +59,11 @@ class List extends React.Component {
         }  
     }
 
-    renderDate(timestamp) {
-        //YIKES 🤮 ... concat the string and the vars 
-        const date = new Date(timestamp * 1000)
-        const day = date.getDate()
-        const month = date.getMonth()
-        const year = date.getFullYear()
-        const hour = date.getHours()
-        const minute = date.getMinutes()
 
-        return(
-            <div>
-                {`${day}/${month}/${year} ${hour}:${minute}`}
-            </div>
-        )
-    }
-
-    toggleBodyOpen = (index) => {
-        console.log("toggleBodyOpen");
-        
-        
+    clickEvent = (i, callback) => {
         this.setState({
-            activeCommentIndex: this.state.activeCommentIndex===null || this.state.activeCommentIndex!==index ? index : null 
-        }, () => {            
-            this.commentWrappers.forEach((commentWrapper, i) => {  
-                console.log("entered conditional");
-                                            
-                if (this.state.activeCommentIndex === i) {
-                    commentWrapper.style.maxHeight = `${commentWrapper.scrollHeight}px`
-                    commentWrapper.style.borderBottom = "0"
-                }else if(commentWrapper !== null){
-                    if (commentWrapper.scrollHeight < 300) {
-                        commentWrapper.style.maxHeight = `${commentWrapper.scrollHeight}px`
-                    } else {
-                        commentWrapper.style.maxHeight = "300px"
-                        commentWrapper.style.borderBottom = "1px dashed #333533"
-                    }               
-                    
-                }
-            })
-        })        
+            activeCommentIndex: this.state.activeCommentIndex===null || this.state.activeCommentIndex!==i ? i : null
+        }, callback)
     }
 
     renderList(){
@@ -109,25 +73,12 @@ class List extends React.Component {
         
         return this.props.comments.map((comment, i) => {
             return (
-                <div className="item" key={comment._id}>
-                    <div className="content">
-                        <div className="post-title">
-                            {comment.postTitle}
-                        </div>
-                        <div 
-                            className="comment-wrapper"
-                            onClick={() => this.toggleBodyOpen(i)}
-                            ref={commentWrapper => this.commentWrappers[i] = commentWrapper}
-                        >
-                            {parse(comment.bodyHTML)}  
-                        </div>         
-                        <div className="description">
-                            {comment.subreddit}
-                            {this.renderDate(comment.created)}
-                        </div>
-                        {i === this.props.comments.length-1 ? '' : <div className="comment-divider" />}
-                    </div>
-                </div>
+                <Comment 
+                    commentData={comment} 
+                    isOpen={this.state.activeCommentIndex === i ? true : false }
+                    onClickEvent={(callback) => this.clickEvent(i, callback)}
+                    key={comment._id}
+                />
             )
         })
     }
