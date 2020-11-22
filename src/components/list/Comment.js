@@ -15,6 +15,10 @@ class Comment extends React.Component{
         this.changeHeight()
     }
 
+    componentDidUpdate() {
+        console.log("COMMENT UPDATED");
+    }
+
     renderDate(timestamp) {
         //YIKES 🤮 ... concat the string and the vars 
         const date = new Date(timestamp * 1000)
@@ -53,7 +57,6 @@ class Comment extends React.Component{
                 <div 
                     className="item"
                     onClick={() => this.props.onClickEvent(this.changeHeight)}
-                    
                 >
                     <div className="content">
                         <div className="post-title">

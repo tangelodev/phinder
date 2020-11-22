@@ -73,12 +73,15 @@ class List extends React.Component {
         
         return this.props.comments.map((comment, i) => {
             return (
+                <>
                 <Comment 
                     commentData={comment} 
                     isOpen={this.state.activeCommentIndex === i ? true : false }
                     onClickEvent={(callback) => this.clickEvent(i, callback)}
                     key={comment._id}
                 />
+                {i === this.props.comments.length-1 ? '' : <div className="comment-divider" />}
+                </>
             )
         })
     }
